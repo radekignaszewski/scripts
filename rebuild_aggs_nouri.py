@@ -1,3 +1,5 @@
+#!/usr/bin/python
+
 import sys
 import time
 import json
@@ -59,8 +61,8 @@ def rebuild_aggs(config):
         while not done:
             r = requests.get(status_url, headers={'Authorization': 'Bearer ' + ar.text}, verify=False)
             
-            print 'status_url : ' + status_url
-            print 'Response (again status_url ): ' + r.text
+#            print 'status_url : ' + status_url
+#            print 'Response (again status_url ): ' + r.text
  
             r_json = r.json()
 

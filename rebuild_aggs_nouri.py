@@ -23,7 +23,7 @@ def get_config(file_path):
 
 def rebuild_aggs(config):
     urlAuth = base_url_auth(config) + '/' + config['designConfig']['defaultOrgId'] + '/auth'
-    ar = requests.get(urlAuth, auth=(config['designConfig']['userName'],config['designConfig']['password']))
+    ar = requests.get(urlAuth, auth=(config['designConfig']['userName'],config['designConfig']['password']), verify=False)
      
     if ar.status_code != 200:
         print 'Authenticate failed with Error:  Call was not successful for unknown reason, status code == ' + str(ar.status_code) + ' and plain text response was ' + ar.text
@@ -33,7 +33,7 @@ def rebuild_aggs(config):
 
     print 'Sending rebuild aggs POST request to: ' + url
 
-    r = requests.post(url, headers = {'Authorization': 'Bearer ' + ar.text})
+    r = requests.post(url, headers = {'Authorization': 'Bearer ' + ar.text}, verify=False)
     
     print 'Response (plain text ): ' + r.text
 
@@ -57,7 +57,7 @@ def rebuild_aggs(config):
         done = False
         status = ''
         while not done:
-            r = requests.get(status_url, headers={'Authorization': 'Bearer ' + ar.text})
+            r = requests.get(status_url, headers={'Authorization': 'Bearer ' + ar.text}, verify=False)
             
             print 'status_url : ' + status_url
             print 'Response (again status_url ): ' + r.text
@@ -66,7 +66,6 @@ def rebuild_aggs(config):
 
             batch = None
             for e in r_json['response']['batches']:
-             if config['projectId'] == r_json['response']['batches'][0]['projectId'] and config['cubeId'] == r_json['response']['batches'][0]['cubeId']:
                 if config['projectId'] == e['projectId'] and config['cubeId'] == e['cubeId']:
                     batch = e['batch']
                     break

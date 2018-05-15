@@ -1,0 +1,18 @@
+{
+    "designConfig":{
+        "hostName": "quickstart.cloudera",
+        "port": 10500,
+        "userName": "admin",
+        "password": "admin",
+        "defaultOrgId": "default"
+    },
+    "useHttps": false,
+    "hostName": "quickstart.cloudera",
+    "port": 10502,
+    "defaultOrgId": "f895d658-54e6-4100-6d0a-11fec1899df2",
+    "defaultEnvId": "a6eaf0fa-bc4c-4a1d-80bb-2b6aee3f1344",
+    "projectId": "9de0ddde-1a0b-4120-6bb0-3f66af285b99",
+    "cubeId": "516ba3ce-f62a-429b-5b39-ecdf7ded17dc",
+    "waitForCompletion": true,
+    "pollingPeriodSeconds": 10
+}

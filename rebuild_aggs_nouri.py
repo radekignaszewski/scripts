@@ -2,7 +2,6 @@ import sys
 import time
 import json
 import requests
-from uritemplate import expand
 
 __author__ = 'joe, radek'
 

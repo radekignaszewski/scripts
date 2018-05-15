@@ -7,6 +7,7 @@
         "defaultOrgId": "default"
     },
     "useHttps": false,
+    "verifyhttps": false, 
     "hostName": "quickstart.cloudera",
     "port": 10502,
     "defaultOrgId": "f895d658-54e6-4100-6d0a-11fec1899df2",

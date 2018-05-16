@@ -2,8 +2,6 @@ import sys
 import time
 import json
 import requests
-from uritemplate import expand
-from test.test_set import cube
 
 __author__ = 'joe, radek'
 
@@ -25,7 +23,7 @@ def get_config(file_path):
 def getOrgId(orgName, sec):
     orgId = None
     url = base_url_auth(config) + '/api/1.0/orgs'
-    r = requests.get(url, headers = {'Authorization': 'Bearer ' + sec}, verify=False)
+    r = sendrequest(url, 'GET', sec)
     print 'Return: ' + r.text
     if r.status_code != 200:
         print 'Get origid failed: ' + str(r.status_code)
@@ -39,15 +37,26 @@ def getOrgId(orgName, sec):
         
     return orgId
 
+def sendrequest(url, reqtype, sec):
+    r = None
+    if reqtype == 'POST':
+        r = requests.post(url, headers = {'Authorization': 'Bearer ' + sec}, verify=False)
+    else:
+        r = requests.get(url, headers = {'Authorization': 'Bearer ' + sec}, verify=False)
+   
+    return r
+    
 def rebuild_aggs(config):
     urlAuth = base_url_auth(config) + '/' + config['designConfig']['defaultOrgId'] + '/auth'
     ar = requests.get(urlAuth, auth=(config['designConfig']['userName'],config['designConfig']['password']))
-     
+    
     if ar.status_code != 200:
         print 'Authenticate failed with Error:  Call was not successful for unknown reason, status code == ' + str(ar.status_code) + ' and plain text response was: ' + ar.text
         return False
-
-    orgId = getOrgId(config['defaultOrgName'], ar.text)
+    
+    jwt_token = ar.text
+    
+    orgId = getOrgId(config['defaultOrgName'], jwt_token)
     if orgId == None:
         print 'Orgid not found for orgName: ' + config['defaultOrgName']
         return False
@@ -58,7 +67,7 @@ def rebuild_aggs(config):
     cubeId = None
     
     url = base_url(config) + '/projects/orgId/' + orgId + '/envId/' + config['defaultEnvId'] + '?includeCubes=true'
-    r = requests.get(url, headers = {'Authorization': 'Bearer ' + ar.text})
+    r = sendrequest(url, 'GET', jwt_token)
 
     if r.status_code != 200:
         print 'Call was not successful for unknown reason, status code == ' + str(r.status_code) + ' and plain text response was: ' + r.text
@@ -85,11 +94,11 @@ def rebuild_aggs(config):
     print "Project is: " + projectId
     print "Cube is: " + cubeId
                     
-    url = base_url(config) + '/aggregate-batch/orgId/' + config['defaultOrgId'] + '/envId/' + config['defaultEnvId'] + '/' + config['projectId'] + '?cubeId=' + config['cubeId']
+    url = base_url(config) + '/aggregate-batch/orgId/' + orgId + '/envId/' + config['defaultEnvId'] + '/' + projectId + '?cubeId=' + cubeId
 
     print 'Sending rebuild aggs POST request to: ' + url
 
-    r = requests.post(url, headers = {'Authorization': 'Bearer ' + ar.text})
+    r = sendrequest(url, 'POST', jwt_token)
     
     print 'Response (plain text ): ' + r.text
 
@@ -107,13 +116,13 @@ def rebuild_aggs(config):
     print 'Batch status: ' + batch_response['status']
     print 'Batch id: ' + batch_response_id
 
-    status_url = base_url(config) + '/aggregate-batch/orgId/' + config['defaultOrgId'] + '/envId/' + config['defaultEnvId']
+    status_url = base_url(config) + '/aggregate-batch/orgId/' + orgId + '/envId/' + config['defaultEnvId']
 
     if config['waitForCompletion']:
         done = False
         status = ''
         while not done:
-            r = requests.get(status_url, headers={'Authorization': 'Bearer ' + ar.text})
+            r = sendrequest(status_url, 'GET', jwt_token)
             
             print 'status_url : ' + status_url
             print 'Response (again status_url ): ' + r.text
@@ -122,8 +131,7 @@ def rebuild_aggs(config):
 
             batch = None
             for e in r_json['response']['batches']:
-             if config['projectId'] == r_json['response']['batches'][0]['projectId'] and config['cubeId'] == r_json['response']['batches'][0]['cubeId']:
-                if config['projectId'] == e['projectId'] and config['cubeId'] == e['cubeId']:
+                if projectId == e['projectId'] and cubeId == e['cubeId']:
                     batch = e['batch']
                     break
 

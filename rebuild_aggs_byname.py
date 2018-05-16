@@ -48,7 +48,7 @@ def sendrequest(url, reqtype, sec):
     
 def rebuild_aggs(config):
     urlAuth = base_url_auth(config) + '/' + config['designConfig']['defaultOrgId'] + '/auth'
-    ar = requests.get(urlAuth, auth=(config['designConfig']['userName'],config['designConfig']['password']))
+    ar = requests.get(urlAuth, auth=(config['designConfig']['userName'],config['designConfig']['password']), verify=False)
     
     if ar.status_code != 200:
         print 'Authenticate failed with Error:  Call was not successful for unknown reason, status code == ' + str(ar.status_code) + ' and plain text response was: ' + ar.text

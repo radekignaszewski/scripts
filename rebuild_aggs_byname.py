@@ -1,3 +1,5 @@
+!#/usr/bin/pyton 
+
 import sys
 import time
 import json
@@ -24,13 +26,13 @@ def getOrgId(orgName, sec):
     orgId = None
     url = base_url_auth(config) + '/api/1.0/orgs'
     r = sendrequest(url, 'GET', sec)
-    print 'Return: ' + r.text
+    #print 'Return: ' + r.text
     if r.status_code != 200:
         print 'Get origid failed: ' + str(r.status_code)
         return orgId
     o_json = r.json()
     for e in o_json['response']:
-        print e
+        #print e
         if e['name'] == orgName:
             orgId = e['id']
             break
@@ -61,7 +63,7 @@ def rebuild_aggs(config):
         print 'Orgid not found for orgName: ' + config['defaultOrgName']
         return False
     
-    print 'GOT orgId: ' + str(orgId);
+    print 'Got orgId: ' + str(orgId) + ' for orgName: ' + config['defaultOrgName'];
 
     projectId = None
     cubeId = None
@@ -73,7 +75,7 @@ def rebuild_aggs(config):
         print 'Call was not successful for unknown reason, status code == ' + str(r.status_code) + ' and plain text response was: ' + r.text
         return False
     
-    print r.text
+    #print r.text
     
     o_json = r.json()
     for e in o_json['response']['projects']:
@@ -91,8 +93,8 @@ def rebuild_aggs(config):
         print 'cubeId not found for cubeName: ' + config['cubeName']
         return False
         
-    print "Project is: " + projectId
-    print "Cube is: " + cubeId
+    print "Project is: " + projectId + ' for projectName: ' + config['projectName']
+    print "Cube is: " + cubeId + ' for cubeName: ' + config['cubeName']
                     
     url = base_url(config) + '/aggregate-batch/orgId/' + orgId + '/envId/' + config['defaultEnvId'] + '/' + projectId + '?cubeId=' + cubeId
 
@@ -100,7 +102,7 @@ def rebuild_aggs(config):
 
     r = sendrequest(url, 'POST', jwt_token)
     
-    print 'Response (plain text ): ' + r.text
+    #print 'Response (plain text ): ' + r.text
 
     if r.status_code == 500:
         print 'Internal server error response (status code == 500), usually this means a batch is already running'
@@ -124,8 +126,8 @@ def rebuild_aggs(config):
         while not done:
             r = sendrequest(status_url, 'GET', jwt_token)
             
-            print 'status_url : ' + status_url
-            print 'Response (again status_url ): ' + r.text
+            #print 'status_url : ' + status_url
+            #print 'Response (again status_url ): ' + r.text
  
             r_json = r.json()
 

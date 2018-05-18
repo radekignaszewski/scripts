@@ -1,0 +1,13 @@
+1. cd /usr/local/atscale/bin
+./atscale_stop_apps
+./atscale_service_control stop repmgrd
+2) Edit /usr/local/atscale/apps/engine/conf/bootstrap.conf and add below parameter after appDb.databaseName
+appDb.maxConnections = 250
+3) Edit /usr/local/atscale/share/postgresql-9.6.2_7/data/postgresql.conf and update max_connections from 100 to 400 
+max_connections = 400
+4) Restart Postgres, followed by other AtScale apps
+cd /usr/local/atscale/bin
+./atscale_service_control restart postgres
+./atscale_start_apps
+./atscale_service_control start repmgrd
+./atscale_service_control status

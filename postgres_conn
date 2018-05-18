@@ -11,3 +11,29 @@ cd /usr/local/atscale/bin
 ./atscale_start_apps
 ./atscale_service_control start repmgrd
 ./atscale_service_control status
+
+
+
+1. Connect to Postgres database (this will connect you to master from any node):
+LD_LIBRARY_PATH=/usr/local/atscale/share/postgresql-9.6.2_7/lib PGPASSWORD=atscale /usr/local/atscale/share/postgresql-9.6.2_7/bin/psql -h localhost -p 10518 -d atscale -U atscale
+
+select type, name, cluster, active, upstream_node_name from repmgr_atscale_pg_cluster.repl_show_nodes;
+
+2. Check what max_conections are set to:
+
+show_max connections;
+
+For example:
+atscale=# show max_connections;
+ max_connections
+-----------------
+ 101
+
+3. See who is connecting:
+
+atscale=# select backend_start,state,pid,usename,application_name from pg_stat_activity where usename='atscale' and application_name = '' order by backend_start;
+         backend_start         | state |  pid  | usename | application_name 
+-------------------------------+-------+-------+---------+------------------
+ 2017-10-04 13:45:01.842867+00 | idle  | 30829 | atscale | 
+ 2017-10-04 14:00:01.668199+00 | idle  | 15313 | atscale | 
+
